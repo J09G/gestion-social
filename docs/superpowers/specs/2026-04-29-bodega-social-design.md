@@ -68,7 +68,7 @@ Valores iniciales: Juguetes, Útiles Escolares, Calzado, Ropa, Tulas, Hogar. Ges
   "createdAt": "datetime"
 }
 ```
-`hasSize` es true solo para productos de Calzado y Ropa. Un mismo producto con distintas tallas existe como documentos separados (ej: Zapato deportivo talla 36, Zapato deportivo talla 38). `criticalThreshold` es configurado por el admin por producto.
+`hasSize` es true solo para productos de Calzado y Ropa. El campo `size` es texto libre que representa un rango (ej: "36 - 40", "S - XL", "Talla única"). No se crean documentos separados por talla; cada producto tiene un rango y un stock total para ese rango. `criticalThreshold` es configurado por el admin por producto.
 
 ### Colección `movements`
 ```json
@@ -128,6 +128,7 @@ PUT    /api/categories/{id}                 admin + bodeguero
 POST   /api/movements
 GET    /api/movements                       filtros: fecha, tipo, productId
 ```
+El formulario de registro de movimientos usa un selector con búsqueda para elegir el producto existente (nombre + categoría + talla). El usuario no escribe el nombre a mano. El request solo envía `productId`, `type` y `quantity`.
 
 ### Usuarios
 ```
