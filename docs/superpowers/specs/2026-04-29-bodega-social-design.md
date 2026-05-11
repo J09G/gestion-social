@@ -2,7 +2,7 @@
 
 **Fecha:** 2026-04-29  
 **Stack:** Spring Boot (Java) + MongoDB + React + Vite + Material UI + JWT  
-**Hosting:** Railway (backend) + MongoDB Atlas (base de datos) + Vercel (frontend)
+**Hosting:** Railway (backend) + MongoDB Atlas (base de datos) + Netlify (frontend)
 
 ---
 
@@ -153,7 +153,7 @@ GET    /api/exports/monthly?year=&month=    reporte mensual en Excel
 - Frontend guarda token en `localStorage`, lo envía como `Authorization: Bearer <token>`.
 - Al expirar el token, el frontend redirige al login.
 - Spring Security protege endpoints por rol.
-- CORS configurado en Spring Boot para permitir peticiones desde el dominio de Vercel (variable de entorno `FRONTEND_URL`).
+- CORS configurado en Spring Boot para permitir peticiones desde el dominio de Netlify (variable de entorno `FRONTEND_URL`).
 - **Usuario admin inicial:** al arrancar la app, si no existe ningún admin en la BD, `DataInitializer` crea uno con credenciales configurables via variables de entorno en Railway.
 
 ---
@@ -225,9 +225,9 @@ src/main/java/com/bodega/gestion_social/
 
 ## 8. Estructura del Frontend
 
-Proyecto separado creado con **React + Vite**, desplegado en **Vercel**. Usa **Material UI (MUI)** como libreria de componentes con personalizacion de tema (colores institucionales).
+Proyecto separado creado con **React + Vite**, desplegado en **Netlify**. Usa **Material UI (MUI)** como libreria de componentes con personalizacion de tema (colores institucionales).
 
-El backend Spring Boot configura CORS para permitir peticiones desde el dominio de Vercel.
+El backend Spring Boot configura CORS para permitir peticiones desde el dominio de Netlify.
 
 ```
 gestion-social-frontend/         (repositorio o carpeta separada)
