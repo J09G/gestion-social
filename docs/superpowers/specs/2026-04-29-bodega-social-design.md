@@ -1,8 +1,8 @@
 # Diseño: Sistema de Gestión de Bodega Social
 
 **Fecha:** 2026-04-29  
-**Stack:** Spring Boot (Java) + MongoDB + HTML/CSS/JS vanilla + JWT  
-**Hosting:** Railway (backend) + MongoDB Atlas (base de datos)
+**Stack:** Spring Boot (Java) + MongoDB + React + Vite + Material UI + JWT  
+**Hosting:** Railway (backend) + MongoDB Atlas (base de datos) + Vercel (frontend)
 
 ---
 
@@ -153,6 +153,7 @@ GET    /api/exports/monthly?year=&month=    reporte mensual en Excel
 - Frontend guarda token en `localStorage`, lo envía como `Authorization: Bearer <token>`.
 - Al expirar el token, el frontend redirige al login.
 - Spring Security protege endpoints por rol.
+- CORS configurado en Spring Boot para permitir peticiones desde el dominio de Vercel (variable de entorno `FRONTEND_URL`).
 - **Usuario admin inicial:** al arrancar la app, si no existe ningún admin en la BD, `DataInitializer` crea uno con credenciales configurables via variables de entorno en Railway.
 
 ---
@@ -224,34 +225,43 @@ src/main/java/com/bodega/gestion_social/
 
 ## 8. Estructura del Frontend
 
-Archivos estáticos en `src/main/resources/static/`:
+Proyecto separado creado con **React + Vite**, desplegado en **Vercel**. Usa **Material UI (MUI)** como libreria de componentes con personalizacion de tema (colores institucionales).
+
+El backend Spring Boot configura CORS para permitir peticiones desde el dominio de Vercel.
 
 ```
-├── login.html
-├── dashboard.html          alertas de stock crítico + accesos rápidos
-├── inventory.html          tabla con filtros por categoría, estado y nombre
-├── movements.html          formulario registrar entrada/salida
-├── history.html            historial con filtros por fecha, tipo y producto
-├── reports.html            reporte mensual por categoría + exportar Excel
-├── products.html           gestión de productos (admin)
-├── categories.html         gestión de categorías (admin + bodeguero)
-├── users.html              gestión de usuarios (admin)
-├── css/
-│   └── styles.css
-└── js/
-    ├── auth.js             verifica token en cada página, maneja logout
-    ├── api.js              funciones fetch con header Authorization incluido
-    ├── dashboard.js
-    ├── inventory.js
-    ├── movements.js
-    ├── history.js
-    ├── reports.js
-    ├── products.js
-    ├── categories.js
-    └── users.js
+gestion-social-frontend/         (repositorio o carpeta separada)
+├── src/
+│   ├── main.jsx
+│   ├── App.jsx                  rutas con React Router
+│   ├── theme.js                 personalizacion MUI (colores, fuentes)
+│   ├── api/
+│   │   └── client.js            fetch base con header JWT incluido
+│   ├── context/
+│   │   └── AuthContext.jsx      estado global del usuario autenticado
+│   ├── components/
+│   │   └── Navbar.jsx           barra de navegacion comun
+│   └── pages/
+│       ├── Login.jsx
+│       ├── Dashboard.jsx        alertas de stock critico
+│       ├── Inventory.jsx        tabla con filtros
+│       ├── Movements.jsx        formulario con selector de producto
+│       ├── History.jsx          historial con filtros
+│       ├── Reports.jsx          reporte mensual + exportar Excel
+│       ├── Products.jsx         solo ADMIN
+│       ├── Categories.jsx       ADMIN + BODEGUERO
+│       └── Users.jsx            solo ADMIN
+├── index.html
+├── vite.config.js
+└── package.json
 ```
 
-Cada `.js` maneja exclusivamente su `.html` correspondiente. La navegación común se inyecta via JS. Los enlaces de admin (productos, usuarios) se muestran solo si el rol en el token es ADMIN.
+**Librerias principales:**
+- `@mui/material` + `@emotion/react` — componentes UI
+- `react-router-dom` — navegacion entre paginas
+- `axios` — peticiones HTTP al backend
+
+**Proteccion de rutas:** componente `PrivateRoute` que verifica el token JWT en `localStorage`. Si no hay token, redirige al login. Si el rol no es ADMIN, redirige al dashboard en rutas de admin.
 
 ---
 
