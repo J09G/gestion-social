@@ -1,4 +1,4 @@
-package com.gestion_social.security;
+package com.bodega.gestion_social.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
