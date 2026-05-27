@@ -13,11 +13,11 @@ public class Movement {
     @Id
     private String id;
     private String productId;
-    private String productName;     // snapshot del nombre al momento del movimiento
-    private String categoryName;    // snapshot de la categoria al momento del movimiento
+    private String productName;    
+    private String categoryName;    
     private MovementType type;
     private int quantity;
     private String userId;
-    private String userName;        // snapshot del nombre del usuario al momento del movimiento
+    private String userName;        
     private LocalDateTime timestamp;
 }
