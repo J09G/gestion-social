@@ -7,15 +7,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.time.LocalDateTime;
 
 @Data
-@Document("users")
-public class User {
+@Document("usuarios")
+public class Usuario {
 
     @Id
     private String id;
-    private String name;
-    private String email;
-    private String passwordHash;
-    private Role role;
-    private boolean active;
-    private LocalDateTime createdAt;
+    private String nombre;
+    private String correo;
+    private String hashContrasena;
+    private Rol rol;
+    private boolean activo;
+    private LocalDateTime fechaCreacion;
 }

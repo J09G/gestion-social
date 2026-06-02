@@ -5,10 +5,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
-@Document("categories")
-public class Category {
+@Document("categorias")
+public class Categoria {
 
     @Id
     private String id;
-    private String name;
+    private String nombre;
 }

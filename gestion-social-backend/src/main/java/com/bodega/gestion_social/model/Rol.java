@@ -1,6 +1,6 @@
 package com.bodega.gestion_social.model;
 
-public enum Role {
+public enum Rol {
     ADMIN,
     BODEGUERO
 }
