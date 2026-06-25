@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -31,11 +32,14 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain cadenaFiltrosSeguridad(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
+                        .csrf(csrf -> csrf.disable())
             .cors(cors -> cors.configurationSource(configuracionCors()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/auth/**").permitAll()
+                                // Solo ADMIN
+                .requestMatchers("/api/users/**").hasRole("ADMIN")
+                // ADMIN y BODEGUERO (cualquier autenticado)
                 .anyRequest().authenticated()
             )
             .addFilterBefore(filtroAutenticacionJwt, UsernamePasswordAuthenticationFilter.class);
@@ -52,7 +56,7 @@ public class SecurityConfig {
     public CorsConfigurationSource configuracionCors() {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(urlFrontend));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
 
