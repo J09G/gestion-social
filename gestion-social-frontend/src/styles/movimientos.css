@@ -1,0 +1,105 @@
+﻿/* movimientos.css — Type toggle, picker, stepper */
+
+/* ---- Type toggle ---- */
+.type-toggle {
+  display: inline-flex;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+}
+
+.type-toggle button {
+  padding: 8px 18px;
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  background: transparent;
+  color: var(--ink-700);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.type-toggle button:not(:last-child) {
+  border-right: 1px solid var(--line);
+}
+.type-toggle button.active {
+  background: var(--teal-800);
+  color: #fff;
+}
+.type-toggle button:hover:not(.active) {
+  background: var(--bg);
+}
+
+/* ---- Picker: date and product ---- */
+.picker-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.picker-row .field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 180px;
+}
+
+.picker-row .field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--ink-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ---- Stepper ---- */
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  overflow: hidden;
+  background: var(--surface);
+}
+
+.stepper button {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink-700);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s;
+}
+.stepper button:hover { background: var(--bg); }
+.stepper button:disabled {
+  color: var(--ink-300);
+  cursor: not-allowed;
+}
+
+.stepper .stepper-value {
+  width: 40px;
+  text-align: center;
+  font-family: var(--mono);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink-900);
+}
+
+/* ---- Form inline actions ---- */
+.form-inline-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line-soft);
+}

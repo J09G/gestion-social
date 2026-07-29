@@ -1,0 +1,121 @@
+/* dashboard.css — Stats, alerts, quick tiles */
+
+/* ---- Page header ---- */
+.page-title {
+  font-family: var(--display);
+  font-size: 28px;
+  font-weight: 400;
+  margin-bottom: 24px;
+  color: var(--ink-900);
+}
+
+/* ---- Stats grid ---- */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 18px 20px;
+  box-shadow: var(--shadow-sm);
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--ink-500);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-family: var(--display);
+  font-size: 32px;
+  font-weight: 500;
+  color: var(--teal-900);
+}
+
+.stat-delta {
+  font-size: 12px;
+  color: var(--ink-500);
+  margin-top: 4px;
+}
+.stat-delta.up { color: var(--ok-700); }
+.stat-delta.down { color: var(--critical-700); }
+
+/* ---- Alertas ---- */
+.alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+.alert-banner.warn {
+  background: var(--warn-100);
+  color: var(--warn-600);
+  border: 1px solid var(--sand-200);
+}
+.alert-banner.critical {
+  background: var(--critical-50);
+  color: var(--critical-700);
+  border: 1px solid var(--critical-100);
+}
+.alert-banner.ok {
+  background: var(--ok-100);
+  color: var(--ok-700);
+  border: 1px solid var(--teal-100);
+}
+
+/* ---- Quick tiles ---- */
+.quick-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.quick-tile {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  padding: 16px;
+  text-align: center;
+  cursor: pointer;
+  transition: box-shadow 0.15s, border-color 0.15s;
+  text-decoration: none;
+  color: var(--ink-900);
+}
+.quick-tile:hover {
+  border-color: var(--teal-500);
+  box-shadow: var(--shadow-md);
+  text-decoration: none;
+}
+.quick-tile .tile-icon {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+.quick-tile .tile-label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ---- Section ---- */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--display);
+  font-size: 20px;
+  font-weight: 400;
+}
