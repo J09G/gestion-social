@@ -1,12 +1,12 @@
 import { Navigate, useLocation } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAutenticacion } from '../context/AuthContext'
 
 export default function PrivateRoute({ children, role }) {
-  const { user, token, loading } = useAuth()
+  const { usuario, token, cargando } = useAutenticacion()
   const location = useLocation()
 
   // Mientras restaura sesión desde localStorage
-  if (loading) {
+  if (cargando) {
     return (
       <div className="page-loader">
         <div className="spinner" />
@@ -16,12 +16,12 @@ export default function PrivateRoute({ children, role }) {
   }
 
   // No autenticado → redirigir al login
-  if (!token || !user) {
+  if (!token || !usuario) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
   // Rol requerido y no lo tiene → redirigir al dashboard
-  if (role && user.rol !== role) {
+  if (role && usuario.rol !== role) {
     return <Navigate to="/" replace />
   }
 

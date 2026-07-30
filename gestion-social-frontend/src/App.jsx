@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import Layout from './components/Layout'
-import PrivateRoute from './components/PrivateRoute'
+import Plantilla from './components/Layout'
+import RutaPrivada from './components/PrivateRoute'
 
 // Páginas
 import Login from './pages/Login'
@@ -19,12 +19,12 @@ export default function App() {
       {/* Ruta pública */}
       <Route path="/login" element={<Login />} />
 
-      {/* Rutas protegidas con Layout */}
+      {/* Rutas protegidas con Plantilla */}
       <Route
         element={
-          <PrivateRoute>
-            <Layout />
-          </PrivateRoute>
+          <RutaPrivada>
+            <Plantilla />
+          </RutaPrivada>
         }
       >
         <Route index element={<Dashboard />} />
@@ -33,8 +33,8 @@ export default function App() {
         <Route path="historial" element={<Historial />} />
         <Route path="reportes" element={<Reportes />} />
         <Route path="categorias" element={<Categorias />} />
-        <Route path="productos" element={<PrivateRoute role="ADMIN"><Productos /></PrivateRoute>} />
-        <Route path="usuarios" element={<PrivateRoute role="ADMIN"><Usuarios /></PrivateRoute>} />
+        <Route path="productos" element={<RutaPrivada role="ADMIN"><Productos /></RutaPrivada>} />
+        <Route path="usuarios" element={<RutaPrivada role="ADMIN"><Usuarios /></RutaPrivada>} />
       </Route>
 
       {/* Fallback */}

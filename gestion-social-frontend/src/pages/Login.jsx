@@ -1,24 +1,24 @@
 import '../styles/login.css'
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import { useAutenticacion } from '../context/AuthContext'
 
 export default function Login() {
-  const { login } = useAuth()
+  const { iniciarSesion } = useAutenticacion()
   const navigate = useNavigate()
   const location = useLocation()
 
   const [correo, setCorreo] = useState('')
   const [contrasena, setContrasena] = useState('')
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [cargando, setCargando] = useState(false)
 
-  const handleSubmit = async (e) => {
+  const manejarEnvio = async (e) => {
     e.preventDefault()
     setError('')
-    setLoading(true)
+    setCargando(true)
     try {
-      await login(correo, contrasena)
+      await iniciarSesion(correo, contrasena)
       const from = location.state?.from?.pathname || '/'
       navigate(from, { replace: true })
     } catch (err) {
@@ -28,12 +28,12 @@ export default function Login() {
         'Credenciales incorrectas. Verifica e intenta de nuevo.'
       setError(msg)
     } finally {
-      setLoading(false)
+      setCargando(false)
     }
   }
 
   return (
-    <div className="login-shell" data-screen-label="Login">
+    <div className="login-shell" data-screen-label="login">
       <aside className="login-aside">
         <div className="login-aside-brand">
           <div className="brand-mark">B</div>
@@ -69,7 +69,7 @@ export default function Login() {
       </aside>
 
       <main className="login-form-wrap">
-        <form className="login-form" onSubmit={handleSubmit} autoComplete="on">
+        <form className="login-form" onSubmit={manejarEnvio} autoComplete="on">
           <p className="page-eyebrow" style={{ marginBottom: 6 }}>
             Acceso restringido
           </p>
@@ -120,8 +120,8 @@ export default function Login() {
             />
           </div>
 
-          <button className="btn btn-primary" type="submit" disabled={loading}>
-            {loading ? 'Ingresando…' : 'Iniciar sesión'}
+          <button className="btn btn-primary" type="submit" disabled={cargando}>
+            {cargando ? 'Ingresando…' : 'Iniciar sesión'}
             <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <line x1="5" y1="12" x2="19" y2="12" />
               <polyline points="12 5 19 12 12 19" />
