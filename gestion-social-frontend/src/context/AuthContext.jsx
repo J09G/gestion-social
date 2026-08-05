@@ -29,12 +29,13 @@ export function ProveedorAutenticacion({ children }) {
 
   // iniciarSesion: envía { correo, contrasena } al backend
   const iniciarSesion = useCallback(async (correo, contrasena) => {
-    const { data } = await client.post('/auth/iniciarSesion', { correo, contrasena });
-    // data = { token, nombre, rol }
-    const datosUsuario = { nombre: data.nombre, rol: data.rol };
-    localStorage.setItem('bg_token', data.token);
+    const { data } = await client.post('/auth/login', { correo, contrasena });
+    // data = ApiResponse { success, message, data: { token, nombre, rol } }
+    const { token, nombre, rol } = data.data;
+    const datosUsuario = { nombre, rol };
+    localStorage.setItem('bg_token', token);
     localStorage.setItem('bg_user', JSON.stringify(datosUsuario));
-    setToken(data.token);
+    setToken(token);
     setUsuario(datosUsuario);
   }, []);
 
