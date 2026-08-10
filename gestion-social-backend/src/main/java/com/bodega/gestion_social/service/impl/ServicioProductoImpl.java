@@ -10,12 +10,17 @@ import com.bodega.gestion_social.repository.CategoriaRepository;
 import com.bodega.gestion_social.repository.ProductoRepository;
 import com.bodega.gestion_social.service.ServicioProducto;
 import lombok.RequiredArgsConstructor;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -98,6 +103,91 @@ public class ServicioProductoImpl implements ServicioProducto {
                 .sorted(Comparator.comparing(Producto::getFechaCreacion).reversed())
                 .map(this::mapearARespuesta)
                 .toList();
+    }
+
+    @Override
+    public int importarDesdeExcel(MultipartFile archivo) {
+        int importados = 0;
+
+        try (Workbook workbook = new XSSFWorkbook(archivo.getInputStream())) {
+            Sheet hoja = workbook.getSheetAt(0);
+
+            for (int i = 1; i <= hoja.getLastRowNum(); i++) {
+                Row fila = hoja.getRow(i);
+                if (fila == null) continue;
+
+                String nombre = obtenerValorCelda(fila.getCell(0));
+                String nombreCategoria = obtenerValorCelda(fila.getCell(1));
+                String talla = obtenerValorCelda(fila.getCell(2));
+                int stockActual = (int) obtenerValorNumerico(fila.getCell(3));
+                int umbralCritico = (int) obtenerValorNumerico(fila.getCell(4));
+
+                if (nombre == null || nombre.isBlank()) continue;
+
+                // Buscar o crear categoría
+                String idCategoria = categoriaRepository.findByNombre(nombreCategoria)
+                        .map(Categoria::getId)
+                        .orElseGet(() -> {
+                            Categoria nuevaCat = new Categoria();
+                            nuevaCat.setNombre(nombreCategoria);
+                            nuevaCat.setFechaCreacion(LocalDateTime.now());
+                            return categoriaRepository.save(nuevaCat).getId();
+                        });
+
+                // Buscar producto por nombre y talla
+                Optional<Producto> productoExistente;
+                if (talla != null && !talla.isBlank()) {
+                    productoExistente = productoRepository.findByNombreAndTallaAndActivoTrue(nombre, talla);
+                } else {
+                    productoExistente = productoRepository.findByNombreAndTallaIsNullAndActivoTrue(nombre);
+                }
+
+                if (productoExistente.isPresent()) {
+                    Producto prod = productoExistente.get();
+                    prod.setStockActual(prod.getStockActual() + stockActual);
+                    productoRepository.save(prod);
+                } else {
+                    Producto nuevo = new Producto();
+                    nuevo.setNombre(nombre);
+                    nuevo.setIdCategoria(idCategoria);
+                    nuevo.setTieneTalla(talla != null && !talla.isBlank());
+                    nuevo.setTalla(talla);
+                    nuevo.setStockActual(stockActual);
+                    nuevo.setUmbralCritico(umbralCritico);
+                    nuevo.setActivo(true);
+                    nuevo.setFechaCreacion(LocalDateTime.now());
+                    productoRepository.save(nuevo);
+                }
+
+                importados++;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Error al leer el archivo Excel: " + e.getMessage(), e);
+        }
+
+        return importados;
+    }
+
+    private String obtenerValorCelda(Cell celda) {
+        if (celda == null) return null;
+        return switch (celda.getCellType()) {
+            case STRING -> celda.getStringCellValue().trim();
+            case NUMERIC -> String.valueOf((int) celda.getNumericCellValue());
+            default -> null;
+        };
+    }
+
+    private double obtenerValorNumerico(Cell celda) {
+        if (celda == null) return 0;
+        if (celda.getCellType() == CellType.NUMERIC) return celda.getNumericCellValue();
+        if (celda.getCellType() == CellType.STRING) {
+            try {
+                return Double.parseDouble(celda.getStringCellValue().trim());
+            } catch (NumberFormatException e) {
+                return 0;
+            }
+        }
+        return 0;
     }
 
     private RespuestaProducto mapearARespuesta(Producto producto) {

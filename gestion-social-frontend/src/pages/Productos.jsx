@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import client from '../api/client';
 
 export default function Productos() {
@@ -9,6 +9,8 @@ export default function Productos() {
   const [enviando, setEnviando] = useState(false);
   const [editando, setEditando] = useState(null);
   const [mostrarForm, setMostrarForm] = useState(false);
+  const [importando, setImportando] = useState(false);
+  const fileInputRef = useRef(null);
 
   const formInicial = { nombre: '', idCategoria: '', tieneTalla: false, talla: '', stockActual: 0, umbralCritico: 0 };
   const [form, setForm] = useState(formInicial);
@@ -86,6 +88,30 @@ export default function Productos() {
     }
   };
 
+  const manejarImportar = async (e) => {
+    const archivo = e.target.files[0];
+    if (!archivo) return;
+    if (!archivo.name.endsWith('.xlsx')) {
+      alert('Solo se permiten archivos .xlsx');
+      return;
+    }
+    try {
+      setImportando(true);
+      const formData = new FormData();
+      formData.append('file', archivo);
+      const { data } = await client.post('/products/import', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      alert(data.message || 'Importación exitosa.');
+      cargarProductos();
+    } catch {
+      alert('Error al importar el archivo.');
+    } finally {
+      setImportando(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const manejarDesactivar = async (id) => {
     if (!confirm('¿Desactivar este producto?')) return;
     try {
@@ -107,6 +133,23 @@ export default function Productos() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h1 className="page-title" style={{ marginBottom: 0 }}>Productos</h1>
         <button className="btn btn-primary" onClick={abrirCrear}>+ Nuevo producto</button>
+        <div style={{ display: 'flex', gap: 10 }}>
+          <input
+            type="file"
+            accept=".xlsx"
+            ref={fileInputRef}
+            style={{ display: 'none' }}
+            onChange={manejarImportar}
+          />
+          <button
+            className="btn btn-ghost"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={importando}
+            title="Importar productos desde Excel (.xlsx)"
+          >
+            {importando ? 'Importando…' : '📥 Importar Excel'}
+          </button>
+        </div>
       </div>
 
       {mostrarForm && (

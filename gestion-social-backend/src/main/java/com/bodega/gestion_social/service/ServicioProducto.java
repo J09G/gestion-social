@@ -3,6 +3,8 @@ package com.bodega.gestion_social.service;
 import com.bodega.gestion_social.dto.request.SolicitudProducto;
 import com.bodega.gestion_social.dto.response.RespuestaProducto;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 
 public interface ServicioProducto {
@@ -16,4 +18,6 @@ public interface ServicioProducto {
     void desactivar(String id);
 
     List<RespuestaProducto> obtenerAlertas();
+
+    int importarDesdeExcel(MultipartFile archivo);
 }

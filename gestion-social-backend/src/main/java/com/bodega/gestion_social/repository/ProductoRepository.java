@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ProductoRepository extends MongoRepository<Producto, String> {
 
@@ -15,6 +16,9 @@ public interface ProductoRepository extends MongoRepository<Producto, String> {
 
     List<Producto> findByNombreContainingIgnoreCaseAndActivoTrue(String nombre, Sort sort);
 
-    @Query("{ $expr: { $lt: ['$stockActual', '$umbralCritico'] }, activo: true }")
+        @Query("{ $expr: { $lt: ['$stockActual', '$umbralCritico'] }, activo: true }")
     List<Producto> findProductosCriticos();
+
+    Optional<Producto> findByNombreAndTallaAndActivoTrue(String nombre, String talla);
+    Optional<Producto> findByNombreAndTallaIsNullAndActivoTrue(String nombre);
 }

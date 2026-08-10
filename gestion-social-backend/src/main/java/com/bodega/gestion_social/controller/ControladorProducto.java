@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -43,6 +44,12 @@ public class ControladorProducto {
     public ResponseEntity<ApiResponse<Void>> desactivar(@PathVariable String id) {
         servicioProducto.desactivar(id);
         return ResponseEntity.ok(ApiResponse.ok(null, "Producto desactivado exitosamente"));
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<ApiResponse<String>> importarExcel(@RequestParam("file") MultipartFile archivo) {
+        int cantidad = servicioProducto.importarDesdeExcel(archivo);
+        return ResponseEntity.ok(ApiResponse.ok(null, "Se importaron/actualizaron " + cantidad + " productos exitosamente."));
     }
 
     @GetMapping("/alerts")
