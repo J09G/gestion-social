@@ -12,6 +12,7 @@ import com.bodega.gestion_social.service.ServicioReporte;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
@@ -34,7 +35,7 @@ public class ServicioReporteImpl implements ServicioReporte {
         LocalDateTime inicio = LocalDateTime.of(anio, mes, 1, 0, 0);
         LocalDateTime fin = LocalDateTime.of(anio, mes, Month.of(mes).length(inicio.toLocalDate().isLeapYear()), 23, 59, 59);
 
-        List<Movimiento> movimientos = movimientoRepository.findByTipoAndFechaHoraBetween(TipoMovimiento.SALIDA, inicio, fin);
+        List<Movimiento> movimientos = movimientoRepository.findByTipoAndFechaHoraBetween(TipoMovimiento.SALIDA, inicio, fin, Sort.by(Sort.Direction.DESC, "fechaHora"));
 
         Map<String, Integer> totalesPorCategoria = movimientos.stream()
                 .collect(Collectors.groupingBy(
@@ -49,7 +50,7 @@ public class ServicioReporteImpl implements ServicioReporte {
 
     @Override
     public byte[] exportarInventarioExcel() {
-        List<Producto> productos = productoRepository.findByActivoTrue();
+        List<Producto> productos = productoRepository.findByActivoTrue(Sort.by(Sort.Direction.DESC, "fechaCreacion"));
 
         try (Workbook libro = new XSSFWorkbook()) {
             Sheet hoja = libro.createSheet("Inventario");

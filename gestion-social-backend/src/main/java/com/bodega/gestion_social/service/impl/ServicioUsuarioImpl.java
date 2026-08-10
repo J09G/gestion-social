@@ -10,6 +10,7 @@ import com.bodega.gestion_social.model.Usuario;
 import com.bodega.gestion_social.repository.UsuarioRepository;
 import com.bodega.gestion_social.service.ServicioUsuario;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +27,7 @@ public class ServicioUsuarioImpl implements ServicioUsuario {
 
     @Override
     public List<RespuestaUsuario> listarTodos() {
-        return usuarioMapper.toResponseList(usuarioRepository.findAll());
+        return usuarioMapper.toResponseList(usuarioRepository.findAll(Sort.by(Sort.Direction.DESC, "fechaCreacion")));
     }
 
     @Override

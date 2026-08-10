@@ -13,6 +13,7 @@ import com.bodega.gestion_social.repository.MovimientoRepository;
 import com.bodega.gestion_social.repository.ProductoRepository;
 import com.bodega.gestion_social.service.ServicioMovimiento;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -67,16 +68,17 @@ public class ServicioMovimientoImpl implements ServicioMovimiento {
 
     @Override
     public List<RespuestaMovimiento> listar(LocalDateTime desde, LocalDateTime hasta, TipoMovimiento tipo, String idProducto) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "fechaHora");
         List<Movimiento> movimientos;
 
         if (idProducto != null && !idProducto.isBlank()) {
-            movimientos = movimientoRepository.findByIdProducto(idProducto);
+            movimientos = movimientoRepository.findByIdProducto(idProducto, sort);
         } else if (tipo != null && desde != null && hasta != null) {
-            movimientos = movimientoRepository.findByTipoAndFechaHoraBetween(tipo, desde, hasta);
+            movimientos = movimientoRepository.findByTipoAndFechaHoraBetween(tipo, desde, hasta, sort);
         } else if (desde != null && hasta != null) {
-            movimientos = movimientoRepository.findByFechaHoraBetween(desde, hasta);
+            movimientos = movimientoRepository.findByFechaHoraBetween(desde, hasta, sort);
         } else {
-            movimientos = movimientoRepository.findAll();
+            movimientos = movimientoRepository.findAll(sort);
         }
 
         return movimientoMapper.toResponseList(movimientos);

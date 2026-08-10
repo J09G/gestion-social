@@ -10,9 +10,11 @@ import com.bodega.gestion_social.repository.CategoriaRepository;
 import com.bodega.gestion_social.repository.ProductoRepository;
 import com.bodega.gestion_social.service.ServicioProducto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -25,14 +27,15 @@ public class ServicioProductoImpl implements ServicioProducto {
 
     @Override
     public List<RespuestaProducto> listarConFiltros(String idCategoria, String estado, String nombre) {
+        Sort sort = Sort.by(Sort.Direction.DESC, "fechaCreacion");
         List<Producto> productos;
 
         if (nombre != null && !nombre.isBlank()) {
-            productos = productoRepository.findByNombreContainingIgnoreCaseAndActivoTrue(nombre);
+            productos = productoRepository.findByNombreContainingIgnoreCaseAndActivoTrue(nombre, sort);
         } else if (idCategoria != null && !idCategoria.isBlank()) {
-            productos = productoRepository.findByIdCategoriaAndActivoTrue(idCategoria);
+            productos = productoRepository.findByIdCategoriaAndActivoTrue(idCategoria, sort);
         } else {
-            productos = productoRepository.findByActivoTrue();
+            productos = productoRepository.findByActivoTrue(sort);
         }
 
         if ("CRITICO".equalsIgnoreCase(estado)) {
@@ -92,6 +95,7 @@ public class ServicioProductoImpl implements ServicioProducto {
     public List<RespuestaProducto> obtenerAlertas() {
         return productoRepository.findProductosCriticos()
                 .stream()
+                .sorted(Comparator.comparing(Producto::getFechaCreacion).reversed())
                 .map(this::mapearARespuesta)
                 .toList();
     }

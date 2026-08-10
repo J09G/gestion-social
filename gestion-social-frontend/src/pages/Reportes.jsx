@@ -108,10 +108,10 @@ export default function Reportes() {
         <h2 style={{ fontFamily: 'var(--display)', fontSize: 18, fontWeight: 400, marginBottom: 12 }}>Exportar datos</h2>
         <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
           <button className="btn btn-secondary" onClick={() => exportarExcel('/exports/inventory', 'inventario.xlsx')}>
-            📦 Exportar inventario
+            Exportar inventario
           </button>
           <button className="btn btn-secondary" onClick={() => exportarExcel(`/exports/monthly?year=${year}&month=${month}`, `reporte-${year}-${month}.xlsx`)}>
-            📊 Exportar reporte mensual
+            Exportar reporte mensual
           </button>
         </div>
       </div>

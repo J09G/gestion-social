@@ -10,7 +10,10 @@ import com.bodega.gestion_social.service.ServicioCategoria;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+
+import org.springframework.data.domain.Sort;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +24,14 @@ public class ServicioCategoriaImpl implements ServicioCategoria {
 
     @Override
     public List<RespuestaCategoria> listarTodas() {
-        return categoriaMapper.toResponseList(categoriaRepository.findAll());
+        return categoriaMapper.toResponseList(categoriaRepository.findAll(Sort.by(Sort.Direction.DESC, "fechaCreacion")));
     }
 
     @Override
     public RespuestaCategoria crear(SolicitudCategoria solicitud) {
         Categoria categoria = new Categoria();
         categoria.setNombre(solicitud.getNombre());
+        categoria.setFechaCreacion(LocalDateTime.now());
         return categoriaMapper.toResponse(categoriaRepository.save(categoria));
     }
 
