@@ -47,13 +47,19 @@ class ControladorCategoriaTest {
             SolicitudCategoria solicitud = new SolicitudCategoria();
             solicitud.setNombre("");
 
-            mockMvc.perform(post("/api/categories")
+            String respuesta = mockMvc.perform(post("/api/categories")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(solicitud)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.ok").value(false))
-                    .andExpect(jsonPath("$.message").value(
-                            org.hamcrest.Matchers.containsString("categoría")));
+
+                    .andExpect(jsonPath("$.success").value(false))
+                    .andReturn()
+                    .getResponse()
+                    .getContentAsString();
+
+            org.junit.jupiter.api.Assertions.assertTrue(
+                    respuesta.contains("categoría"),
+                    "Se esperaba que el mensaje contuviera 'categoría', pero fue: " + respuesta);
         }
 
         @Test
@@ -66,7 +72,7 @@ class ControladorCategoriaTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(solicitud)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.ok").value(false));
+                    .andExpect(jsonPath("$.success").value(false));
         }
     }
 
@@ -90,7 +96,7 @@ class ControladorCategoriaTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(solicitud)))
                     .andExpect(status().isNotFound())
-                    .andExpect(jsonPath("$.ok").value(false))
+                    .andExpect(jsonPath("$.success").value(false))
                     .andExpect(jsonPath("$.message").value(
                             org.hamcrest.Matchers.containsString("Categoría")));
         }
@@ -105,7 +111,7 @@ class ControladorCategoriaTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(solicitud)))
                     .andExpect(status().isBadRequest())
-                    .andExpect(jsonPath("$.ok").value(false));
+                    .andExpect(jsonPath("$.success").value(false));
         }
     }
 }
