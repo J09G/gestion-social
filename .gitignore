@@ -1,3 +1,6 @@
 ﻿static/
 .vscode/
 .claude/
+
+# Logs
+*.log
