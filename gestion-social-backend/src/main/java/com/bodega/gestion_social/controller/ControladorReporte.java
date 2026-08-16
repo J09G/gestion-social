@@ -1,5 +1,6 @@
 package com.bodega.gestion_social.controller;
 
+import com.bodega.gestion_social.dto.response.ApiResponse;
 import com.bodega.gestion_social.dto.response.RespuestaReporteMensual;
 import com.bodega.gestion_social.service.ServicioReporte;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,10 @@ public class ControladorReporte {
     private final ServicioReporte servicioReporte;
 
     @GetMapping("/reports/monthly")
-    public ResponseEntity<List<RespuestaReporteMensual>> reporteMensual(
+    public ResponseEntity<ApiResponse<List<RespuestaReporteMensual>>> reporteMensual(
             @RequestParam int year,
             @RequestParam int month) {
-        return ResponseEntity.ok(servicioReporte.obtenerReporteMensual(year, month));
+        return ResponseEntity.ok(ApiResponse.ok(servicioReporte.obtenerReporteMensual(year, month), "Reporte mensual generado exitosamente"));
     }
 
     @GetMapping("/exports/inventory")

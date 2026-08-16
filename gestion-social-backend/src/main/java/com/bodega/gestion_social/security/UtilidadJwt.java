@@ -15,11 +15,17 @@ public class UtilidadJwt {
     private final SecretKey claveSecreta;
     private final long expiracion;
 
-    public UtilidadJwt(
+        public UtilidadJwt(
             @Value("${jwt.secreto}") String secreto,
             @Value("${jwt.expiracion}") long expiracion
     ) {
-        this.claveSecreta = Keys.hmacShaKeyFor(secreto.getBytes(StandardCharsets.UTF_8));
+        byte[] bytesSecreto = secreto.getBytes(StandardCharsets.UTF_8);
+        if (bytesSecreto.length < 32) {
+            throw new IllegalStateException(
+                    "JWT_SECRET debe tener al menos 32 caracteres para usar HMAC-SHA256. "
+                    + "Longitud actual: " + bytesSecreto.length + " caracteres.");
+        }
+        this.claveSecreta = Keys.hmacShaKeyFor(bytesSecreto);
         this.expiracion = expiracion;
     }
 

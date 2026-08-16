@@ -15,7 +15,7 @@ export default function Reportes() {
       setCargando(true);
       setError('');
       const { data } = await client.get('/reports/monthly', { params: { year, month } });
-      setReporte(data || []);
+      setReporte(data.data || []);
     } catch {
       setError('Error al cargar el reporte.');
     } finally {

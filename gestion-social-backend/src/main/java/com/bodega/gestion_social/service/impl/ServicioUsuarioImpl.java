@@ -40,7 +40,7 @@ public class ServicioUsuarioImpl implements ServicioUsuario {
         usuario.setNombre(solicitud.getNombre());
         usuario.setCorreo(solicitud.getCorreo());
         usuario.setHashContrasena(codificadorContrasena.encode(solicitud.getContrasena()));
-        usuario.setRol(Rol.valueOf(solicitud.getRol()));
+        usuario.setRol(validarRol(solicitud.getRol()));
         usuario.setActivo(true);
         usuario.setFechaCreacion(LocalDateTime.now());
 
@@ -60,13 +60,22 @@ public class ServicioUsuarioImpl implements ServicioUsuario {
 
         usuario.setNombre(solicitud.getNombre());
         usuario.setCorreo(solicitud.getCorreo());
-        usuario.setRol(Rol.valueOf(solicitud.getRol()));
+        usuario.setRol(validarRol(solicitud.getRol()));
 
         if (solicitud.getContrasena() != null && !solicitud.getContrasena().isBlank()) {
             usuario.setHashContrasena(codificadorContrasena.encode(solicitud.getContrasena()));
         }
 
         return usuarioMapper.toResponse(usuarioRepository.save(usuario));
+    }
+
+    private Rol validarRol(String valor) {
+        try {
+            return Rol.valueOf(valor);
+        } catch (IllegalArgumentException ex) {
+            throw new IllegalArgumentException(
+                    "Rol inválido: '" + valor + "'. Los roles permitidos son: ADMIN, BODEGUERO");
+        }
     }
 
     @Override

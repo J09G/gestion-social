@@ -37,10 +37,14 @@ public class ServicioProductoImpl implements ServicioProducto {
 
         if (nombre != null && !nombre.isBlank()) {
             productos = productoRepository.findByNombreContainingIgnoreCaseAndActivoTrue(nombre, sort);
-        } else if (idCategoria != null && !idCategoria.isBlank()) {
-            productos = productoRepository.findByIdCategoriaAndActivoTrue(idCategoria, sort);
         } else {
             productos = productoRepository.findByActivoTrue(sort);
+        }
+
+        if (idCategoria != null && !idCategoria.isBlank()) {
+            productos = productos.stream()
+                    .filter(p -> idCategoria.equals(p.getIdCategoria()))
+                    .toList();
         }
 
         if ("CRITICO".equalsIgnoreCase(estado)) {
@@ -124,12 +128,20 @@ public class ServicioProductoImpl implements ServicioProducto {
 
                 if (nombre == null || nombre.isBlank()) continue;
 
-                // Buscar o crear categoría
-                String idCategoria = categoriaRepository.findByNombre(nombreCategoria)
+                // Normalizar y buscar/crear categoría (ignorando mayúsculas/minúsculas)
+                String nombreCatNormalizado = nombreCategoria == null ? "" : nombreCategoria.trim().replaceAll("\\s+", " ");
+                if (nombreCatNormalizado.isBlank()) {
+                    nombreCatNormalizado = "Sin categoría";
+                } else {
+                    nombreCatNormalizado = Character.toUpperCase(nombreCatNormalizado.charAt(0)) + nombreCatNormalizado.substring(1);
+                }
+
+                String finalNombreCat = nombreCatNormalizado;
+                String idCategoria = categoriaRepository.findByNombreIgnoreCase(finalNombreCat)
                         .map(Categoria::getId)
                         .orElseGet(() -> {
                             Categoria nuevaCat = new Categoria();
-                            nuevaCat.setNombre(nombreCategoria);
+                            nuevaCat.setNombre(finalNombreCat);
                             nuevaCat.setFechaCreacion(LocalDateTime.now());
                             return categoriaRepository.save(nuevaCat).getId();
                         });
