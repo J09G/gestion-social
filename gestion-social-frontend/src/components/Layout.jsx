@@ -9,7 +9,7 @@ const nav = [
   { to: '/movimientos',  label: 'Movimientos' },
   { to: '/historial',    label: 'Historial' },
   { to: '/reportes',     label: 'Reportes' },
-  { to: '/categorias',   label: 'CategorÃ­as' },
+  { to: '/categorias',   label: 'Categorías' },
   { to: '/productos',    label: 'Productos',      admin: true },
   { to: '/usuarios',     label: 'Usuarios',       admin: true },
 ]
@@ -40,14 +40,14 @@ export default function Layout() {
           <Link to="/" className="brand" onClick={() => setMenuAbierto(false)}>
             <div className="brand-mark">B</div>
             <span>Bodega Social</span>
-            <span className="brand-sub">AlcaldÃ­a Municipal</span>
+            <span className="brand-sub">Alcaldía Municipal</span>
           </Link>
 
           {/* Hamburger (mobile) */}
           <button
             className={`hamburger ${menuAbierto ? 'is-open' : ''}`}
             onClick={() => setMenuAbierto((o) => !o)}
-            aria-label="MenÃº"
+            aria-label="Menú"
           >
             <span />
             <span />
@@ -79,7 +79,7 @@ export default function Layout() {
             <span className={`role badge ${esAdmin ? 'badge-role-admin' : 'badge-role-bodeguero'}`}>
               {usuario?.rol}
             </span>
-            <button className="logout-btn" onClick={manejarCierre} title="Cerrar sesiÃ³n">
+            <button className="logout-btn" onClick={manejarCierre} title="Cerrar sesión">
               Salir
             </button>
           </div>
@@ -110,7 +110,7 @@ export default function Layout() {
               {usuario?.rol}
             </span>
             <button className="logout-btn full-width" onClick={manejarCierre}>
-              Cerrar sesiÃ³n
+              Cerrar sesión
             </button>
           </div>
         </div>
