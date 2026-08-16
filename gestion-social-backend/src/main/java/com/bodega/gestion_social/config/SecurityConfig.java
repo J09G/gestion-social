@@ -36,7 +36,8 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(configuracionCors()))
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
+                .requestMatchers("/health").permitAll()
+                                .requestMatchers("/api/auth/**").permitAll()
                                 // Solo ADMIN
                 .requestMatchers("/api/users/**").hasRole("ADMIN")
                 // ADMIN y BODEGUERO (cualquier autenticado)
