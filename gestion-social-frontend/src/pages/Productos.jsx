@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect, useRef } from 'react';
 import client from '../api/client';
+import { IconoEditar, IconoDesactivar } from '../components/Iconos';
 
 export default function Productos() {
   const [productos, setProductos] = useState([]);
@@ -247,9 +248,13 @@ export default function Productos() {
                   <td className="num">{prod.umbralCritico}</td>
                   <td><span className="badge" style={estiloEstado(prod.estado)}>{prod.estado}</span></td>
                   <td>
-                    <button className="btn btn-sm btn-ghost" onClick={() => abrirEditar(prod)} title="Editar">✏️</button>
+                    <button className="btn btn-sm btn-ghost" onClick={() => abrirEditar(prod)} title="Editar" aria-label="Editar producto">
+                      <IconoEditar />
+                    </button>
                     {prod.activo && (
-                      <button className="btn btn-sm btn-ghost" onClick={() => manejarDesactivar(prod.id)} title="Desactivar">❌</button>
+                      <button className="btn btn-sm btn-ghost" onClick={() => manejarDesactivar(prod.id)} title="Desactivar" aria-label="Desactivar producto">
+                        <IconoDesactivar />
+                      </button>
                     )}
                   </td>
                 </tr>

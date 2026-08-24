@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import client from '../api/client';
+import { IconoEditar } from '../components/Iconos';
 
 export default function Categorias() {
   const [categorias, setCategorias] = useState([]);
@@ -105,8 +106,8 @@ export default function Categorias() {
                 <tr key={cat.id}>
                   <td className="name">{cat.nombre}</td>
                   <td>
-                    <button className="btn btn-sm btn-ghost" onClick={() => iniciarEdicion(cat)} title="Editar">
-                      ✏️
+                    <button className="btn btn-sm btn-ghost" onClick={() => iniciarEdicion(cat)} title="Editar" aria-label="Editar categoría">
+                      <IconoEditar />
                     </button>
                   </td>
                 </tr>

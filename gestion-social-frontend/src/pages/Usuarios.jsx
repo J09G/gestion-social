@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import client from '../api/client';
+import { IconoEditar, IconoDesactivar } from '../components/Iconos';
 
 export default function Usuarios() {
   const [usuarios, setUsuarios] = useState([]);
@@ -163,9 +164,13 @@ export default function Usuarios() {
                     </span>
                   </td>
                   <td>
-                    <button className="btn btn-sm btn-ghost" onClick={() => abrirEditar(usr)} title="Editar">✏️</button>
+                    <button className="btn btn-sm btn-ghost" onClick={() => abrirEditar(usr)} title="Editar" aria-label="Editar usuario">
+                      <IconoEditar />
+                    </button>
                     {usr.activo && (
-                      <button className="btn btn-sm btn-ghost" onClick={() => manejarDesactivar(usr.id)} title="Desactivar">❌</button>
+                      <button className="btn btn-sm btn-ghost" onClick={() => manejarDesactivar(usr.id)} title="Desactivar" aria-label="Desactivar usuario">
+                        <IconoDesactivar />
+                      </button>
                     )}
                   </td>
                 </tr>

@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect } from 'react';
 import { useAutenticacion } from '../context/AuthContext';
 import client from '../api/client';
+import { IconoDesactivar } from '../components/Iconos';
  
 export default function Inventario() {
   const { esAdmin } = useAutenticacion();
@@ -122,8 +123,8 @@ export default function Inventario() {
                   {esAdmin && (
                     <td>
                       {prod.activo ? (
-                        <button className="btn btn-sm btn-ghost" onClick={() => manejarDesactivar(prod.id)} title="Desactivar">
-                          ❌
+                        <button className="btn btn-sm btn-ghost" onClick={() => manejarDesactivar(prod.id)} title="Desactivar" aria-label="Desactivar producto">
+                          <IconoDesactivar />
                         </button>
                       ) : (
                         <span className="badge" style={{ background: 'var(--ink-300)', color: '#fff' }}>Inactivo</span>
