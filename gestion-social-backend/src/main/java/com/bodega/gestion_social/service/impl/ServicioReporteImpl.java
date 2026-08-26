@@ -1,7 +1,7 @@
 package com.bodega.gestion_social.service.impl;
 
-import com.bodega.gestion_social.dto.response.RespuestaProducto;
 import com.bodega.gestion_social.dto.response.RespuestaReporteMensual;
+import com.bodega.gestion_social.model.Categoria;
 import com.bodega.gestion_social.model.Movimiento;
 import com.bodega.gestion_social.model.Producto;
 import com.bodega.gestion_social.model.TipoMovimiento;
@@ -12,6 +12,9 @@ import com.bodega.gestion_social.service.ServicioReporte;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,8 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,7 +40,9 @@ public class ServicioReporteImpl implements ServicioReporte {
         LocalDateTime inicio = LocalDateTime.of(anio, mes, 1, 0, 0);
         LocalDateTime fin = LocalDateTime.of(anio, mes, Month.of(mes).length(inicio.toLocalDate().isLeapYear()), 23, 59, 59);
 
-        List<Movimiento> movimientos = movimientoRepository.findByTipoAndFechaHoraBetween(TipoMovimiento.SALIDA, inicio, fin, Sort.by(Sort.Direction.DESC, "fechaHora"));
+        Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, "fechaHora"));
+        Page<Movimiento> paginaMovimientos = movimientoRepository.findByTipoAndFechaHoraBetween(TipoMovimiento.SALIDA, inicio, fin, pageable);
+        List<Movimiento> movimientos = paginaMovimientos.getContent();
 
         Map<String, Integer> totalesPorCategoria = movimientos.stream()
                 .collect(Collectors.groupingBy(
@@ -52,6 +59,18 @@ public class ServicioReporteImpl implements ServicioReporte {
     public byte[] exportarInventarioExcel() {
         List<Producto> productos = productoRepository.findByActivoTrue(Sort.by(Sort.Direction.DESC, "fechaCreacion"));
 
+        Set<String> idsCategorias = productos.stream()
+                .map(Producto::getIdCategoria)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        Map<String, String> nombresCategorias = categoriaRepository.findAllById(idsCategorias).stream()
+                .collect(Collectors.toMap(Categoria::getId, Categoria::getNombre));
+
+        return generarInventarioExcel(productos, nombresCategorias);
+    }
+
+    private byte[] generarInventarioExcel(List<Producto> productos, Map<String, String> nombresCategorias) {
         try (Workbook libro = new XSSFWorkbook()) {
             Sheet hoja = libro.createSheet("Inventario");
 
@@ -70,9 +89,7 @@ public class ServicioReporteImpl implements ServicioReporte {
             int numFila = 1;
             for (Producto p : productos) {
                 Row fila = hoja.createRow(numFila++);
-                String nombreCategoria = categoriaRepository.findById(p.getIdCategoria())
-                        .map(c -> c.getNombre())
-                        .orElse("Sin categoría");
+                String nombreCategoria = nombresCategorias.getOrDefault(p.getIdCategoria(), "Sin categoría");
                 String estado = p.getStockActual() < p.getUmbralCritico() ? "CRÍTICO" : "OK";
 
                 fila.createCell(0).setCellValue(p.getNombre());

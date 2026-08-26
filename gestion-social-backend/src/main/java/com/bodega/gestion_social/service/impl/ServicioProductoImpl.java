@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -57,9 +59,7 @@ public class ServicioProductoImpl implements ServicioProducto {
                     .toList();
         }
 
-        return productos.stream()
-                .map(this::mapearARespuesta)
-                .toList();
+        return mapearARespuesta(productos);
     }
 
     @Override
@@ -102,11 +102,11 @@ public class ServicioProductoImpl implements ServicioProducto {
 
     @Override
     public List<RespuestaProducto> obtenerAlertas() {
-        return productoRepository.findProductosCriticos()
-                .stream()
-                .sorted(Comparator.comparing(Producto::getFechaCreacion).reversed())
-                .map(this::mapearARespuesta)
-                .toList();
+        return mapearARespuesta(
+                productoRepository.findProductosCriticos().stream()
+                        .sorted(Comparator.comparing(Producto::getFechaCreacion).reversed())
+                        .toList()
+        );
     }
 
     @Override
@@ -202,16 +202,29 @@ public class ServicioProductoImpl implements ServicioProducto {
         return 0;
     }
 
+    private List<RespuestaProducto> mapearARespuesta(List<Producto> productos) {
+        Map<String, String> nombresCategorias = categoriaRepository.findAllById(
+                        productos.stream()
+                                .map(Producto::getIdCategoria)
+                                .filter(java.util.Objects::nonNull)
+                                .collect(Collectors.toSet())
+                ).stream()
+                .collect(Collectors.toMap(Categoria::getId, Categoria::getNombre));
+
+        return productos.stream()
+                .map(producto -> {
+                    String nombreCategoria = nombresCategorias.getOrDefault(producto.getIdCategoria(), "Sin categoría");
+                    String estado = producto.getStockActual() < producto.getUmbralCritico() ? "CRITICO" : "OK";
+
+                    RespuestaProducto respuesta = productoMapper.toResponse(producto);
+                    respuesta.setNombreCategoria(nombreCategoria);
+                    respuesta.setEstado(estado);
+                    return respuesta;
+                })
+                .toList();
+    }
+
     private RespuestaProducto mapearARespuesta(Producto producto) {
-        String nombreCategoria = categoriaRepository.findById(producto.getIdCategoria())
-                .map(Categoria::getNombre)
-                .orElse("Sin categoría");
-
-        String estado = producto.getStockActual() < producto.getUmbralCritico() ? "CRITICO" : "OK";
-
-        RespuestaProducto respuesta = productoMapper.toResponse(producto);
-        respuesta.setNombreCategoria(nombreCategoria);
-        respuesta.setEstado(estado);
-        return respuesta;
+        return mapearARespuesta(List.of(producto)).get(0);
     }
 }

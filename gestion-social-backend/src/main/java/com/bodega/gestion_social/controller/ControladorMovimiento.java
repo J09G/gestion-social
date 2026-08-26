@@ -3,6 +3,7 @@ package com.bodega.gestion_social.controller;
 import com.bodega.gestion_social.dto.request.SolicitudMovimiento;
 import com.bodega.gestion_social.dto.response.ApiResponse;
 import com.bodega.gestion_social.dto.response.RespuestaMovimiento;
+import com.bodega.gestion_social.dto.response.RespuestaPaginada;
 import com.bodega.gestion_social.model.TipoMovimiento;
 import com.bodega.gestion_social.service.ServicioMovimiento;
 import jakarta.validation.Valid;
@@ -14,7 +15,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/movements")
@@ -36,11 +36,14 @@ public class ControladorMovimiento {
     }
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<RespuestaMovimiento>>> listar(
+    public ResponseEntity<ApiResponse<RespuestaPaginada<RespuestaMovimiento>>> listar(
             @RequestParam(required = false) LocalDateTime desde,
             @RequestParam(required = false) LocalDateTime hasta,
             @RequestParam(required = false) TipoMovimiento tipo,
-            @RequestParam(required = false) String idProducto) {
-        return ResponseEntity.ok(ApiResponse.ok(servicioMovimiento.listar(desde, hasta, tipo, idProducto)));
+            @RequestParam(required = false) String idProducto,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        RespuestaPaginada<RespuestaMovimiento> respuesta = servicioMovimiento.listar(desde, hasta, tipo, idProducto, page, size);
+        return ResponseEntity.ok(ApiResponse.ok(respuesta, "Movimientos listados exitosamente"));
     }
 }

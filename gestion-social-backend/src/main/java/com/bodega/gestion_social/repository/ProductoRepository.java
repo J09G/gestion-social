@@ -12,6 +12,8 @@ public interface ProductoRepository extends MongoRepository<Producto, String> {
 
         List<Producto> findByActivoTrue(Sort sort);
 
+    long countByActivoTrue();
+
     List<Producto> findByIdCategoriaAndActivoTrue(String idCategoria, Sort sort);
 
     List<Producto> findByNombreContainingIgnoreCaseAndActivoTrue(String nombre, Sort sort);

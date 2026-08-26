@@ -7,6 +7,10 @@ export default function Movimientos() {
   const [movimientos, setMovimientos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
+  const [pagina, setPagina] = useState(0);
+  const [totalPaginas, setTotalPaginas] = useState(0);
+
+  const TAMANIO_PAGINA = 20;
 
   // Filtros tabla
   const [filtroTipo, setFiltroTipo] = useState('');
@@ -27,11 +31,14 @@ export default function Movimientos() {
   const cargarMovimientos = async () => {
     try {
       setCargando(true);
-      const params = {};
+      setError('');
+      const params = { page: pagina, size: TAMANIO_PAGINA };
       if (filtroTipo) params.tipo = filtroTipo;
       if (filtroProducto) params.idProducto = filtroProducto;
       const { data } = await client.get('/movements', { params });
-      setMovimientos(data.data || []);
+      const payload = data.data || {};
+      setMovimientos(payload.items || []);
+      setTotalPaginas(payload.totalPaginas || 0);
     } catch {
       setError('Error al cargar movimientos.');
     } finally {
@@ -40,7 +47,7 @@ export default function Movimientos() {
   };
 
   useEffect(() => { cargarProductos(); }, []);
-  useEffect(() => { cargarMovimientos(); }, [filtroTipo, filtroProducto]);
+  useEffect(() => { cargarMovimientos(); }, [filtroTipo, filtroProducto, pagina]);
 
   const manejarEnvio = async (e) => {
     e.preventDefault();
@@ -163,6 +170,18 @@ export default function Movimientos() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {totalPaginas > 1 && (
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 16, alignItems: 'center' }}>
+          <button className="btn btn-ghost" onClick={() => setPagina(Math.max(0, pagina - 1))} disabled={pagina === 0 || cargando}>
+            Anterior
+          </button>
+          <span style={{ color: 'var(--ink-500)' }}>Página {pagina + 1} de {totalPaginas}</span>
+          <button className="btn btn-ghost" onClick={() => setPagina(Math.min(totalPaginas - 1, pagina + 1))} disabled={pagina >= totalPaginas - 1 || cargando}>
+            Siguiente
+          </button>
         </div>
       )}
     </div>

@@ -2,19 +2,19 @@ package com.bodega.gestion_social.repository;
 
 import com.bodega.gestion_social.model.Movimiento;
 import com.bodega.gestion_social.model.TipoMovimiento;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 public interface MovimientoRepository extends MongoRepository<Movimiento, String> {
 
-        List<Movimiento> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin, Sort sort);
+    Page<Movimiento> findByFechaHoraBetween(LocalDateTime inicio, LocalDateTime fin, Pageable pageable);
 
-    List<Movimiento> findByTipoAndFechaHoraBetween(TipoMovimiento tipo, LocalDateTime inicio, LocalDateTime fin, Sort sort);
+    Page<Movimiento> findByTipoAndFechaHoraBetween(TipoMovimiento tipo, LocalDateTime inicio, LocalDateTime fin, Pageable pageable);
 
-    List<Movimiento> findByIdProducto(String idProducto, Sort sort);
+    Page<Movimiento> findByIdProducto(String idProducto, Pageable pageable);
 
-    List<Movimiento> findAll(Sort sort);
+    Page<Movimiento> findAll(Pageable pageable);
 }

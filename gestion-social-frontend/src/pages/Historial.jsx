@@ -6,24 +6,31 @@ export default function Historial() {
   const [productos, setProductos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState('');
+  const [pagina, setPagina] = useState(0);
+  const [totalPaginas, setTotalPaginas] = useState(0);
+
+  const TAMANIO_PAGINA = 20;
 
   // Filtros
   const [filtroDesde, setFiltroDesde] = useState('');
   const [filtroHasta, setFiltroHasta] = useState('');
   const [filtroTipo, setFiltroTipo] = useState('');
   const [filtroProducto, setFiltroProducto] = useState('');
-  const [pagina, setPagina] = useState(0);
+  const [busqueda, setBusqueda] = useState(false);
 
   const cargarMovimientos = async () => {
     try {
       setCargando(true);
-      const params = {};
+      setError('');
+      const params = { page: pagina, size: TAMANIO_PAGINA };
       if (filtroDesde) params.desde = filtroDesde + 'T00:00:00';
       if (filtroHasta) params.hasta = filtroHasta + 'T23:59:59';
       if (filtroTipo) params.tipo = filtroTipo;
       if (filtroProducto) params.idProducto = filtroProducto;
       const { data } = await client.get('/movements', { params });
-      setMovimientos(data.data || []);
+      const payload = data.data || {};
+      setMovimientos(payload.items || []);
+      setTotalPaginas(payload.totalPaginas || 0);
     } catch {
       setError('Error al cargar el historial.');
     } finally {
@@ -39,12 +46,12 @@ export default function Historial() {
   };
 
   useEffect(() => { cargarProductos(); }, []);
-  useEffect(() => { cargarMovimientos(); }, [filtroTipo, filtroProducto, pagina]);
+  useEffect(() => { cargarMovimientos(); }, [filtroTipo, filtroProducto, pagina, busqueda]);
 
   const manejarBuscar = (e) => {
     e.preventDefault();
     setPagina(0);
-    cargarMovimientos();
+    setBusqueda((prev) => !prev);
   };
 
   const limpiarFiltros = () => {
@@ -53,6 +60,7 @@ export default function Historial() {
     setFiltroTipo('');
     setFiltroProducto('');
     setPagina(0);
+    setBusqueda((prev) => !prev);
   };
 
   return (
@@ -127,6 +135,18 @@ export default function Historial() {
               ))}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {totalPaginas > 1 && (
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', marginTop: 16, alignItems: 'center' }}>
+          <button className="btn btn-ghost" onClick={() => setPagina(Math.max(0, pagina - 1))} disabled={pagina === 0 || cargando}>
+            Anterior
+          </button>
+          <span style={{ color: 'var(--ink-500)' }}>Página {pagina + 1} de {totalPaginas}</span>
+          <button className="btn btn-ghost" onClick={() => setPagina(Math.min(totalPaginas - 1, pagina + 1))} disabled={pagina >= totalPaginas - 1 || cargando}>
+            Siguiente
+          </button>
         </div>
       )}
     </div>

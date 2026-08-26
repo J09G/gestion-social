@@ -12,19 +12,18 @@ export default function Dashboard() {
   useEffect(() => {
     const obtenerDatos = async () => {
       try {
-        const [resAlertas, resProductos, resCategorias, resMovimientos] = await Promise.all([
+        const [resStats, resAlertas] = await Promise.all([
+          client.get('/dashboard/stats'),
           client.get('/products/alerts'),
-          client.get('/products'),
-          client.get('/categories'),
-          client.get('/movements'),
         ]);
 
-        setAlertas(resAlertas.data.data || []);
+        const stats = resStats.data.data || {};
         setTotales({
-          productos: (resProductos.data.data || []).length,
-          categorias: (resCategorias.data.data || []).length,
-          movimientos: (resMovimientos.data.data || []).length,
+          productos: stats.productosActivos ?? 0,
+          categorias: stats.categorias ?? 0,
+          movimientos: stats.movimientos ?? 0,
         });
+        setAlertas(resAlertas.data.data || []);
       } catch {
         setError('No se pudieron cargar los datos del dashboard.');
       } finally {
