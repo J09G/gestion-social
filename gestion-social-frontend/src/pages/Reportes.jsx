@@ -25,12 +25,7 @@ export default function Reportes() {
 
   const exportarExcel = async (url, nombreArchivo) => {
     try {
-      const token = localStorage.getItem('bg_token');
-      const res = await fetch(`/api${url}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      if (!res.ok) throw new Error();
-      const blob = await res.blob();
+      const { data: blob } = await client.get(url, { responseType: 'blob' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
       link.download = nombreArchivo;
