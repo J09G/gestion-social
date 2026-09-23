@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: gestion-social-backend
+    runtime: docker
+    rootDir: gestion-social-backend
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: MONGODB_URI
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: FRONTEND_URL
+        sync: false

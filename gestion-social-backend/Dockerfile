@@ -17,7 +17,7 @@ WORKDIR /app
 # Copia el jar generado
 COPY --from=build /app/target/gestion-social-0.0.1-SNAPSHOT.jar app.jar
 
-# Railway inyecta PORT; Spring usa ${PORT:8080}
+# Render/Railway inyectan PORT; Spring usa ${PORT:8080}
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "app.jar"]

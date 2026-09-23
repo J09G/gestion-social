@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Configuration
@@ -57,7 +58,11 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource configuracionCors() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(urlFrontend));
+        // Acepta varios origenes separados por coma, con comodines (ej: https://*.vercel.app)
+        config.setAllowedOriginPatterns(Arrays.stream(urlFrontend.split(","))
+                .map(String::trim)
+                .filter(origen -> !origen.isEmpty())
+                .toList());
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
